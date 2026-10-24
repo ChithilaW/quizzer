@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL Past Paper Quiz Matrix | Chithila Desandu Wanniarachchi</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            300: '#ffe57f',
+                            400: '#ffd700',
+                            500: '#ffc107',
+                            600: '#ffb300'
+                        },
+                        obsidian: '#000000',
+                        darkcard: '#12141c'
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        heading: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #000000;
+            color: #f3f4f6;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+        }
+
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: auto;
+        }
+
+        .glass-panel {
+            background: rgba(18, 20, 28, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+        }
+
+        .glass-panel-gold {
+            background: rgba(25, 22, 10, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.12);
+        }
+
+        .gold-glow-btn {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb300 100%);
+            color: #000000;
+            font-weight: 700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transition: all 0.25s ease;
+        }
+
+        .gold-glow-btn:hover {
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .gold-border-glow {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090a0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 215, 0, 0.6);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative antialiased selection:bg-gold-400 selection:text-black">
+
+    <!-- Interactive Particle Background Canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Main Dynamic Application Container -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+
+        <!-- Navigation Bar -->
+        <nav class="sticky top-0 z-40 glass-panel border-b border-gold-400/20 px-4 lg:px-8 py-3">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                
+                <!-- Logo & Brand -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-gold-500 to-amber-300 flex items-center justify-center text-black font-bold text-xl shadow-lg shadow-gold-500/20">
+                        <i class="fa-solid font-mono font-black text-black">M</i>
+                    </div>
+                    <div>
+                        <div class="font-heading font-bold text-lg leading-tight tracking-wide text-white flex items-center gap-2">
+                            SL Quiz Matrix
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-gold-400/10 text-gold-400 border border-gold-400/30 font-mono">O/L & A/L</span>
+                        </div>
+                        <p class="text-xs text-gray-400 font-mono">By Chithila Desandu Wanniarachchi</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Nav Links -->
+                <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                    <button onclick="switchTab('home')" class="nav-btn hover:text-gold-400 transition-colors py-1 flex items-center gap-2 text-gold-400" id="nav-home">
+                        <i class="fa-solid fa-house"></i> Home
+                    </button>
+                    <button onclick="switchTab('topics')" class="nav-btn hover:text-gold-400 transition-colors py-1 flex items-center gap-2" id="nav-topics">
+                        <i class="fa-solid fa-cubes"></i> Topic Extractor
+                    </button>
+                    <button onclick="switchTab('exam')" class="nav-btn hover:text-gold-400 transition-colors py-1 flex items-center gap-2" id="nav-exam">
+                        <i class="fa-solid fa-stopwatch"></i> Exam Simulator
+                    </button>
+                    <button onclick="switchTab('account')" class="nav-btn hover:text-gold-400 transition-colors py-1 flex items-center gap-2" id="nav-account">
+                        <i class="fa-solid fa-user-gear"></i> Account & Sync
+                    </button>
+                </div>
+
+                <!-- API Key Status Pill -->
+                <div class="hidden md:flex items-center space-x-3">
+                    <button id="apiKeyPill" onclick="openApiKeyModal()" class="px-3 py-1.5 rounded-full text-xs font-mono flex items-center gap-2 transition-all">
+                        <!-- Dynamic Pill Content -->
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="flex items-center md:hidden gap-3">
+                    <button id="apiKeyPillMobile" onclick="openApiKeyModal()" class="px-2.5 py-1 rounded-full text-[11px] font-mono">
+                        <!-- Dynamic Mobile Pill -->
+                    </button>
+                    <button onclick="toggleMobileDrawer()" class="p-2 text-gray-300 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Nav Drawer -->
+            <div id="mobileDrawer" class="hidden md:hidden mt-3 pt-3 border-t border-gray-800 space-y-2">
+                <button onclick="switchTab('home'); toggleMobileDrawer()" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gold-400/10 hover:text-gold-400 flex items-center gap-3">
+                    <i class="fa-solid fa-house"></i> Home
+                </button>
+                <button onclick="switchTab('topics'); toggleMobileDrawer()" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gold-400/10 hover:text-gold-400 flex items-center gap-3">
+                    <i class="fa-solid fa-cubes"></i> Topic Extractor
+                </button>
+                <button onclick="switchTab('exam'); toggleMobileDrawer()" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gold-400/10 hover:text-gold-400 flex items-center gap-3">
+                    <i class="fa-solid fa-stopwatch"></i> Exam Simulator
+                </button>
+                <button onclick="switchTab('account'); toggleMobileDrawer()" class="w-full text-left px-4 py-2 rounded-lg hover:bg-gold-400/10 hover:text-gold-400 flex items-center gap-3">
+                    <i class="fa-solid fa-user-gear"></i> Account & Sync
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content View Area -->
+        <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8 space-y-8">
+
+            <!-- DYNAMIC API KEY BANNER (AUTOMATICALLY DISAPPEARS WHEN API KEY IS ADDED) -->
+            <div id="topApiKeyAlertBanner" class="glass-panel-gold rounded-2xl p-5 md:p-6 border-l-4 border-l-gold-400 relative overflow-hidden transition-all duration-300">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-gold-400/20 text-gold-400 flex items-center justify-center text-2xl shrink-0 mt-0.5">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-heading font-bold text-lg text-white flex items-center gap-2">
+                                Gemini API Key Required for Live Extraction & AI Explanations
+                            </h3>
+                            <p class="text-sm text-gray-300 mt-1 max-w-3xl leading-relaxed">
+                                Connect your free Google Gemini API key to extract authentic past paper MCQs (2015–2025) and get step-by-step solutions. This banner automatically disappears once your key is saved!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 w-full md:w-auto shrink-0">
+                        <button onclick="openApiKeyModal()" class="gold-glow-btn px-5 py-2.5 rounded-xl text-sm w-full md:w-auto text-center flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-sliders"></i> Attach API Key Free
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 1: HOME PAGE -->
+            <section id="tab-home" class="tab-content space-y-8">
+                <!-- Hero Section -->
+                <div class="glass-panel rounded-3xl p-8 md:p-12 relative overflow-hidden border border-gold-400/20">
+                    <div class="absolute -right-20 -top-20 w-80 h-80 bg-gold-400/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="max-w-3xl space-y-6">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-400/10 border border-gold-400/30 text-gold-400 text-xs font-mono">
+                            <i class="fa-solid fa-graduation-cap"></i> Sri Lankan Curriculum Standard (2015 - 2025)
+                        </div>
+                        <h1 class="font-heading text-3xl md:text-5xl font-extrabold text-white leading-tight">
+                            Master G.C.E. O/L & A/L Past Papers with <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-amber-300 to-yellow-500">AI Precision</span>.
+                        </h1>
+                        <p class="text-gray-300 text-base md:text-lg leading-relaxed">
+                            Filter authentic past paper MCQs by targeted syllabus units, attempt full timed exam simulations under official conditions, and receive step-by-step marking scheme explanations.
+                        </p>
+                        <div class="flex flex-wrap gap-4 pt-2">
+                            <button onclick="switchTab('topics')" class="gold-glow-btn px-6 py-3.5 rounded-xl flex items-center gap-2 font-medium text-base">
+                                <i class="fa-solid fa-filter"></i> Topic Extractor
+                            </button>
+                            <button onclick="switchTab('exam')" class="px-6 py-3.5 rounded-xl glass-panel hover:bg-gold-400/10 hover:border-gold-400/40 text-white font-medium flex items-center gap-2 border border-white/10 transition-all text-base">
+                                <i class="fa-solid fa-stopwatch"></i> Timed Exam Mode
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature Grid -->
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="glass-panel rounded-2xl p-6 border border-white/5 hover:border-gold-400/30 transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-gold-400/10 text-gold-400 flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-cubes-stacked"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-lg text-white mb-2">Full Topic Extractor</h3>
+                        <p class="text-sm text-gray-400">Fetch large batches of past paper questions across 2015–2025 for any specific unit with instant answer validation.</p>
+                    </div>
+                    <div class="glass-panel rounded-2xl p-6 border border-white/5 hover:border-gold-400/30 transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-gold-400/10 text-gold-400 flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-lg text-white mb-2">SL Curriculum Rules</h3>
+                        <p class="text-sm text-gray-400">Official guidelines enforced automatically: O/L History & Buddhism strictly follow Sinhala medium with standard A-W grading.</p>
+                    </div>
+                    <div class="glass-panel rounded-2xl p-6 border border-white/5 hover:border-gold-400/30 transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-gold-400/10 text-gold-400 flex items-center justify-center text-xl mb-4">
+                            <i class="fa-solid fa-stopwatch"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-lg text-white mb-2">Timed Exam Simulator</h3>
+                        <p class="text-sm text-gray-400">Simulate official examination hall conditions with timers, index number verification, and instant grading analysis.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: TOPIC EXTRACTOR -->
+            <section id="tab-topics" class="tab-content hidden space-y-6">
+                <!-- Extractor Setup Panel -->
+                <div class="glass-panel rounded-2xl p-6 md:p-8 space-y-6">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                        <div>
+                            <h2 class="font-heading text-2xl font-bold text-white flex items-center gap-3">
+                                <i class="fa-solid fa-layer-group text-gold-400"></i> Past Paper Topic Extractor
+                            </h2>
+                            <p class="text-xs text-gray-400 mt-1">Select exam level, stream/subject, medium, and target batch size to pull authentic MCQs from 2015–2025.</p>
+                        </div>
+                    </div>
+
+                    <!-- Filter Options Controls -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-mono text-gray-300 mb-2">EXAM LEVEL</label>
+                            <select id="topicExamLevel" onchange="handleLevelChange()" class="w-full bg-black/60 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-gold-400 outline-none text-sm">
+                                <option value="OL">G.C.E. O/L (Ordinary Level)</option>
+                                <option value="AL">G.C.E. A/L (Advanced Level)</option>
+                            </select>
+                        </div>
+
+                        <div id="streamWrapper">
+                            <label class="block text-xs font-mono text-gray-300 mb-2" id="streamLabel">STREAM</label>
+                            <select id="topicStream" onchange="handleStreamChange()" class="w-full bg-black/60 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-gold-400 outline-none text-sm">
+                                <!-- Options dynamically rendered -->
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-mono text-gray-300 mb-2">SUBJECT</label>
+                            <select id="topicSubject" onchange="handleSubjectChange()" class="w-full bg-black/60 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-gold-400 outline-none text-sm">
+                                <!-- Dynamic subjects -->
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-mono text-gray-300 mb-2">MEDIUM</label>
+                            <select id="topicMedium" class="w-full bg-black/60 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-gold-400 outline-none text-sm">
+                                <option value="English">English Medium</option>
+                                <option value="Sinhala">Sinhala Medium</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Medium Forced Badge Notice -->
+                    <div id="sinhalaMediumBadge" class="hidden p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2 font-mono">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Official SL Exam Rule: O/L History & Buddhism exams are strictly conducted in Sinhala medium.</span>
+                    </div>
+
+                    <!-- Topic & Batch Size Controls -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-mono text-gray-300 mb-2">SELECT SYLLABUS TOPIC / UNIT</label>
+                            <select id="topicSelect" class="w-full bg-black/60 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-gold-400 outline-none text-sm">
+                                <!-- Dynamic topics -->
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-mono text-gold-400 mb-2">BATCH SIZE / QUANTITY</label>
+                            <select id="batchSize" class="w-full bg-black/60 border border-gold-400/50 rounded-xl px-4 py-3 text-gold-300 focus:border-gold-400 outline-none text-sm font-semibold">
+                                <option value="5">5 Questions</option>
+                                <option value="10" selected>10 Questions</option>
+                                <option value="15">15 Questions</option>
+                                <option value="20">20 Questions (All Available)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button onclick="extractTopicQuestions(false)" class="gold-glow-btn w-full py-4 rounded-xl text-base flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-bolt"></i> Extract Past Paper Questions (2015–2025)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Questions Display Bank -->
+                <div id="questionsContainer" class="space-y-6">
+                    <!-- Dynamic question cards appended here -->
+                </div>
+
+                <!-- Pagination & Continuation Control -->
+                <div id="paginationControls" class="hidden glass-panel rounded-2xl p-6 text-center space-y-3">
+                    <p class="text-sm text-gray-300">Need more practice questions on this topic?</p>
+                    <button onclick="extractTopicQuestions(true)" class="gold-glow-btn px-8 py-3 rounded-xl text-sm inline-flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle"></i> Fetch Next Batch for this Topic
+                    </button>
+                </div>
+            </section>
+
+            <!-- TAB 3: EXAM SIMULATOR -->
+            <section id="tab-exam" class="tab-content hidden space-y-6">
+                <!-- Exam Setup Panel -->
+                <div id="examSetupCard" class="glass-panel rounded-2xl p-6 md:p-8 space-y-6">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                        <div>
+                            <h2 class="font-heading text-2xl font-bold text-white flex items-center gap-3">
+                                <i class="fa-solid fa-stopwatch text-gold-400"></i> Full Past Paper Exam Simulator
+                            </h2>
+                            <p class="text-xs text-gray-400 mt-1">Simulate real G.C.E. examination hall conditions under strict official time limits.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-mono text-gray-300 mb-2">EXAM LEVEL</label>
+                            <select id="examLevel" onchange="updateExamSubjects()" class="w-full bg-black/60 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-gold-400 outline-none text-sm">
+                                <option value="OL">G.C.E. O/L MCQ Paper (10 Qs - 15 Mins)</option>
+                                <option value="AL">G.C.E. A/L MCQ Paper (15 Qs - 30 Mins)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-gray-300 mb-2">SUBJECT</label>
+                            <select id="examSubject" class="w-full bg-black/60 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-gold-400 outline-none text-sm">
+                                <!-- Dynamic subjects -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-gray-300 mb-2">MEDIUM</label>
+                            <select id="examMedium" class="w-full bg-black/60 border border-gray-700 rounded-xl px-4 py-3 text-white focus:border-gold-400 outline-none text-sm">
+                                <option value="English">English Medium</option>
+                                <option value="Sinhala">Sinhala Medium</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-gold-400 mb-2">CANDIDATE INDEX NO.</label>
+                            <input type="text" id="candidateIndex" placeholder="e.g. 849201" class="w-full bg-black/60 border border-gold-400/40 rounded-xl px-4 py-3 text-white focus:border-gold-400 outline-none font-mono text-sm">
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-gold-400/10 border border-gold-400/20 text-xs text-gold-200 space-y-1 font-mono">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Official Rules: Zero-hint mode enabled. Explanations and results will be calculated upon final submission.
+                    </div>
+
+                    <button onclick="startExamSimulation()" class="gold-glow-btn w-full py-4 rounded-xl text-base flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-play"></i> Generate & Start Timed Exam Paper
+                    </button>
+                </div>
+
+                <!-- Active Exam Interface -->
+                <div id="activeExamWrapper" class="hidden space-y-6">
+                    <div class="glass-panel-gold rounded-2xl p-4 sticky top-20 z-30 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-400 font-mono text-xs animate-pulse">EXAM IN PROGRESS</span>
+                            <span id="examIndexBadge" class="text-xs font-mono text-gold-400">Index: 849201</span>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <div class="text-right">
+                                <div class="text-[10px] text-gray-400 font-mono">TIME REMAINING</div>
+                                <div id="examTimer" class="font-mono text-xl font-bold text-gold-400">15:00</div>
+                            </div>
+                            <button onclick="submitExamPaper()" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all shadow-lg">
+                                Final Submit
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="examQuestionsContainer" class="space-y-6">
+                        <!-- Questions dynamically loaded -->
+                    </div>
+                </div>
+
+                <!-- Exam Results Modal / Card -->
+                <div id="examResultsCard" class="hidden glass-panel-gold rounded-3xl p-8 space-y-6 border border-gold-400/40">
+                    <div class="text-center space-y-2">
+                        <span class="px-3 py-1 rounded-full bg-gold-400/20 text-gold-400 font-mono text-xs">OFFICIAL EXAMINATION RESULT SHEET</span>
+                        <h2 class="font-heading text-3xl font-bold text-white">Performance Analysis</h2>
+                        <p id="resultCandidateInfo" class="text-xs text-gray-300 font-mono"></p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                        <div class="bg-black/50 rounded-2xl p-6 border border-white/10 text-center">
+                            <div class="text-xs text-gray-400 font-mono">MARKS OBTAINED</div>
+                            <div id="resultScore" class="font-heading text-4xl font-extrabold text-white mt-2">0/10</div>
+                        </div>
+                        <div class="bg-black/50 rounded-2xl p-6 border border-white/10 text-center">
+                            <div class="text-xs text-gray-400 font-mono">PERCENTAGE</div>
+                            <div id="resultPercentage" class="font-heading text-4xl font-extrabold text-gold-400 mt-2">0%</div>
+                        </div>
+                        <div class="bg-black/50 rounded-2xl p-6 border border-white/10 text-center">
+                            <div class="text-xs text-gray-400 font-mono">OFFICIAL SL GRADE</div>
+                            <div id="resultGrade" class="font-heading text-4xl font-extrabold text-emerald-400 mt-2">W</div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex justify-center gap-4">
+                        <button onclick="resetExamSimulator()" class="gold-glow-btn px-8 py-3.5 rounded-xl text-sm font-bold">
+                            Attempt Another Exam
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: ACCOUNT & DASHBOARD -->
+            <section id="tab-account" class="tab-content hidden space-y-6">
+                <!-- Account Sync Explanation Header -->
+                <div class="glass-panel-gold rounded-2xl p-6 md:p-8 space-y-4">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="font-heading text-2xl font-bold text-white flex items-center gap-3">
+                                <i class="fa-solid fa-cloud text-gold-400"></i> Progress Tracking & Sync System
+                            </h2>
+                            <p class="text-sm text-gray-300 mt-1">
+                                Your practice scores, bookmarked past paper questions, and grade statistics are synchronized automatically.
+                            </p>
+                        </div>
+                        <div id="userAuthStatusBadge" class="px-4 py-2 rounded-xl bg-gold-400/20 border border-gold-400/40 text-gold-300 text-xs font-mono">
+                            Guest Session Active
+                        </div>
+                    </div>
+
+                    <!-- Sync Info Cards -->
+                    <div class="grid md:grid-cols-2 gap-4 pt-4 border-t border-gold-400/20">
+                        <div class="bg-black/40 rounded-xl p-4 border border-white/5 space-y-2">
+                            <div class="text-sm font-bold text-gold-400 flex items-center gap-2">
+                                <i class="fa-solid fa-hard-drive"></i> Local Storage Backup
+                            </div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                Questions answered, exam results, and custom bookmarks are instantly cached in your browser so you never lose progress.
+                            </p>
+                        </div>
+                        <div class="bg-black/40 rounded-xl p-4 border border-white/5 space-y-2">
+                            <div class="text-sm font-bold text-gold-400 flex items-center gap-2">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Firebase Sync
+                            </div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                Connects automatically to Firebase Cloud artifacts to sync your exam performance across all mobile and desktop devices.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Overview Dashboard -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="glass-panel rounded-2xl p-5 border border-white/5 text-center">
+                        <div class="text-xs font-mono text-gray-400">TOTAL QUESTIONS ATTEMPTED</div>
+                        <div id="statTotalAttempts" class="font-heading text-3xl font-extrabold text-white mt-2">0</div>
+                    </div>
+                    <div class="glass-panel rounded-2xl p-5 border border-white/5 text-center">
+                        <div class="text-xs font-mono text-gray-400">AVERAGE ACCURACY</div>
+                        <div id="statAvgAccuracy" class="font-heading text-3xl font-extrabold text-gold-400 mt-2">0%</div>
+                    </div>
+                    <div class="glass-panel rounded-2xl p-5 border border-white/5 text-center">
+                        <div class="text-xs font-mono text-gray-400">EXAMS COMPLETED</div>
+                        <div id="statExamsDone" class="font-heading text-3xl font-extrabold text-emerald-400 mt-2">0</div>
+                    </div>
+                    <div class="glass-panel rounded-2xl p-5 border border-white/5 text-center">
+                        <div class="text-xs font-mono text-gray-400">BOOKMARKED QUESTIONS</div>
+                        <div id="statBookmarks" class="font-heading text-3xl font-extrabold text-amber-300 mt-2">0</div>
+                    </div>
+                </div>
+
+                <!-- History Log -->
+                <div class="glass-panel rounded-2xl p-6 space-y-4">
+                    <h3 class="font-heading font-bold text-xl text-white">Recent Exam Attempt History</h3>
+                    <div id="examHistoryContainer" class="space-y-3">
+                        <div class="text-center py-8 text-gray-500 text-sm">No exam attempts logged yet. Try an exam simulation!</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-auto border-t border-gold-400/20 glass-panel py-6 px-4 text-center text-xs text-gray-400 relative z-10">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    SL National Curriculum Past Paper Quiz Matrix • Ananda College Student Developer Project
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="https://chithilaw.github.io/portfolio" target="_blank" rel="noopener noreferrer" class="text-gold-400 hover:text-white transition-colors flex items-center gap-1 font-mono">
+                        <i class="fa-solid fa-globe"></i> Developer Portfolio
+                    </a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- API KEY INSTRUCTION MODAL -->
+    <div id="apiKeyModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="glass-panel-gold rounded-3xl max-w-xl w-full p-6 md:p-8 space-y-6 relative border border-gold-400/40">
+            <button onclick="closeApiKeyModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="space-y-2">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-400/10 text-gold-400 text-xs font-mono">
+                    <i class="fa-solid fa-key"></i> Setup Gemini API Engine
+                </div>
+                <h3 class="font-heading text-2xl font-bold text-white">Attach Google Gemini API Key</h3>
+                <p class="text-xs text-gray-300">
+                    Get a free API key from Google AI Studio to unlock dynamic past paper question extraction and step-by-step marking schemes.
+                </p>
+            </div>
+
+            <div class="space-y-3 text-sm text-gray-300 bg-black/50 p-4 rounded-2xl border border-white/5">
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 rounded-full bg-gold-400 text-black font-bold flex items-center justify-center text-xs shrink-0">1</span>
+                    <p>Open <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-gold-400 underline font-semibold">Google AI Studio</a> in a new tab.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 rounded-full bg-gold-400 text-black font-bold flex items-center justify-center text-xs shrink-0">2</span>
+                    <p>Click "Create API Key" and copy the generated key string.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 rounded-full bg-gold-400 text-black font-bold flex items-center justify-center text-xs shrink-0">3</span>
+                    <p>Paste the key below and hit "Save API Key". The alert banner will immediately disappear!</p>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-mono text-gray-300 mb-2">PASTE YOUR GEMINI API KEY HERE</label>
+                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full bg-black/80 border border-gold-400/40 rounded-xl px-4 py-3 text-white focus:border-gold-400 outline-none font-mono text-sm">
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="saveApiKey()" class="gold-glow-btn flex-1 py-3.5 rounded-xl text-sm font-bold">
+                    Save API Key
+                </button>
+                <button onclick="clearApiKey()" class="px-4 py-3.5 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 text-sm font-semibold border border-red-500/30">
+                    Clear Key
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic & Data -->
+    <script>
+        const SUBJECT_DATA = {
+            OL: {
+                streams: {
+                    Core: ["Mathematics", "Science", "English", "Sinhala Language", "History", "Buddhism"]
+                },
+                topics: {
+                    "Mathematics": ["Real Numbers", "Algebraic Expressions", "Perimeter & Area", "Matrices", "Quadratic Equations", "Pythagoras Theorem", "Trigonometry", "Probability"],
+                    "Science": ["Biological Processes & Cells", "Chemical Reactions & Equations", "Force & Motion", "Electricity & Magnetism", "Genetics", "Acids, Bases & Salts", "Light & Optics"],
+                    "English": ["Grammatical Tenses", "Vocabulary & Context", "Reading Comprehension", "Prepositions & Articles", "Direct & Indirect Speech"],
+                    "Sinhala Language": ["ව්‍යාකරණ (Grammar)", "සාහිත්‍යය (Literature)", "රචනා (Compositions)", "ඡන්දස් හා අලංකාර"],
+                    "History": ["ශ්‍රී ලංකාවේ මුල් ජනාවාස", "අනුරාධපුර හා පොළොන්නරුව යුගය", "කෝට්ටේ හා සීතාවක රාජධානි", "නිදහස් අරගලය හා ආණ්ඩුක්‍රම ප්‍රතිසංස්කරණ"],
+                    "Buddhism": ["තෙරුවන් ගුණ", "චතුරාර්ය සත්‍යය", "බෞද්ධ සංස්කෘතිය හා ඉතිහාසය", "පටිච්ච සමුප්පාදය"]
+                }
+            },
+            AL: {
+                streams: {
+                    "Physical Science": ["Combined Mathematics", "Physics", "Chemistry"],
+                    "Biological Science": ["Biology", "Chemistry", "Physics"],
+                    "Commerce": ["Accounting", "Business Studies", "Economics"],
+                    "Technology": ["Engineering Technology", "Science for Technology", "Information Technology"],
+                    "Arts": ["Sinhala", "Political Science", "Logic & Scientific Method", "Economics"]
+                },
+                topics: {
+                    "Combined Mathematics": ["Real Numbers & Polynomials", "Trigonometry", "Limits & Calculus", "Statics", "Dynamics", "Vectors", "Complex Numbers", "Permutations & Combinations"],
+                    "Physics": ["Measurement & Units", "Mechanics", "Oscillations & Waves", "Thermal Physics", "Gravitational & Electrostatic Fields", "Current Electricity", "Electronics"],
+                    "Chemistry": ["Atomic Structure & Periodicity", "Chemical Bonding", "Gaseous State", "Thermodynamics", "Chemical Kinetics", "Organic Chemistry", "Inorganic Chemistry"],
+                    "Biology": ["Introduction to Biology & Chemical Basis", "Cellular Biology", "Plant Diversity & Structure", "Animal Form & Function", "Genetics & Molecular Biology", "Ecology"],
+                    "Accounting": ["Financial Accounting Framework", "Accounting Standards", "Partnership Accounts", "Company Accounts", "Cost & Management Accounting"],
+                    "Business Studies": ["Business Environment", "Management Foundations", "Marketing Management", "Operations Management", "Financial Management"],
+                    "Economics": ["Basic Economic Concepts", "Demand, Supply & Price", "Production & Cost Theory", "Macroeconomic Indicators", "Money & Banking", "International Trade"],
+                    "Information Technology": ["Data Representation", "Computer System Architecture", "Database Management", "Networking & Internet", "Programming Fundamentals (Python)"],
+                    "Science for Technology": ["Physics for Technology", "Chemistry for Technology", "Basic Biology & Agriculture", "Mathematics for Technology"]
+                }
+            }
+        };
+
+        // Application State
+        window.userStats = {
+            totalAttempts: 0,
+            correctAttempts: 0,
+            examsCompleted: 0,
+            bookmarkedQuestions: []
+        };
+        window.examHistory = [];
+        window.currentLoadedQuestions = [];
+        window.activeExamQuestions = [];
+        window.activeExamAnswers = {};
+        window.examTimerInterval = null;
+
+        window.addEventListener('load', () => {
+            initParticleCanvas();
+            loadApiKey();
+            handleLevelChange();
+            updateExamSubjects();
+            loadLocalState();
+            updateDashboardUI();
+        });
+
+        // Tab Navigation
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('text-gold-400'));
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) activeBtn.classList.add('text-gold-400');
+        }
+
+        // Particle Canvas Backdrop
+        function initParticleCanvas() {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const particles = Array.from({ length: 60 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.6,
+                vy: (Math.random() - 0.5) * 0.6,
+                radius: Math.random() * 1.8 + 0.8
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach((p, i) => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 215, 0, 0.4)';
+                    ctx.fill();
+
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(255, 215, 0, ${0.12 * (1 - dist / 120)})`;
+                            ctx.lineWidth = 0.6;
+                            ctx.stroke();
+                        }
+                    }
+                });
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Syllabus Selectors
+        function handleLevelChange() {
+            const level = document.getElementById('topicExamLevel').value;
+            const streamSelect = document.getElementById('topicStream');
+            streamSelect.innerHTML = '';
+            
+            const streams = Object.keys(SUBJECT_DATA[level].streams);
+            streams.forEach(st => {
+                const opt = document.createElement('option');
+                opt.value = st;
+                opt.textContent = st;
+                streamSelect.appendChild(opt);
+            });
+
+            handleStreamChange();
+        }
+
+        function handleStreamChange() {
+            const level = document.getElementById('topicExamLevel').value;
+            const stream = document.getElementById('topicStream').value;
+            const subjectSelect = document.getElementById('topicSubject');
+
+            subjectSelect.innerHTML = '';
+            const subjects = SUBJECT_DATA[level].streams[stream] || [];
+
+            subjects.forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub;
+                opt.textContent = sub;
+                subjectSelect.appendChild(opt);
+            });
+
+            handleSubjectChange();
+        }
+
+        function handleSubjectChange() {
+            const level = document.getElementById('topicExamLevel').value;
+            const subject = document.getElementById('topicSubject').value;
+            const topicSelect = document.getElementById('topicSelect');
+            const mediumSelect = document.getElementById('topicMedium');
+            const badge = document.getElementById('sinhalaMediumBadge');
+
+            topicSelect.innerHTML = '';
+            const topics = SUBJECT_DATA[level].topics[subject] || ["General Syllabus Overview"];
+
+            topics.forEach(top => {
+                const opt = document.createElement('option');
+                opt.value = top;
+                opt.textContent = top;
+                topicSelect.appendChild(opt);
+            });
+
+            if (level === 'OL' && (subject === 'History' || subject === 'Buddhism')) {
+                mediumSelect.value = 'Sinhala';
+                mediumSelect.disabled = true;
+                badge.classList.remove('hidden');
+            } else {
+                mediumSelect.disabled = false;
+                badge.classList.add('hidden');
+            }
+        }
+
+        function updateExamSubjects() {
+            const level = document.getElementById('examLevel').value;
+            const examSubSelect = document.getElementById('examSubject');
+            examSubSelect.innerHTML = '';
+
+            let allSubjects = [];
+            Object.values(SUBJECT_DATA[level].streams).forEach(subs => {
+                allSubjects.push(...subs);
+            });
+            allSubjects = [...new Set(allSubjects)];
+
+            allSubjects.forEach(sub => {
+                const opt = document.createElement('option');
+                opt.value = sub;
+                opt.textContent = sub;
+                examSubSelect.appendChild(opt);
+            });
+        }
+
+        // API Key Management & Banner Hiding Logic
+        function getStoredApiKey() {
+            return localStorage.getItem('sl_quiz_matrix_gemini_key') || '';
+        }
+
+        function loadApiKey() {
+            const key = getStoredApiKey();
+            const banner = document.getElementById('topApiKeyAlertBanner');
+            
+            if (key) {
+                if (banner) banner.classList.add('hidden');
+                updateApiKeyPill(true);
+            } else {
+                if (banner) banner.classList.remove('hidden');
+                updateApiKeyPill(false);
+            }
+        }
+
+        function updateApiKeyPill(isConfigured) {
+            const pill = document.getElementById('apiKeyPill');
+            const pillMobile = document.getElementById('apiKeyPillMobile');
+            
+            if (isConfigured) {
+                pill.className = "px-3 py-1.5 rounded-full text-xs font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-2";
+                pill.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Key Configured`;
+                pillMobile.className = "px-2.5 py-1 rounded-full text-[11px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                pillMobile.innerHTML = `Key Active`;
+            } else {
+                pill.className = "px-3 py-1.5 rounded-full text-xs font-mono bg-gold-400/20 text-gold-400 border border-gold-400/40 flex items-center gap-2 animate-bounce";
+                pill.innerHTML = `<i class="fa-solid fa-key"></i> Key Missing`;
+                pillMobile.className = "px-2.5 py-1 rounded-full text-[11px] font-mono bg-gold-400/20 text-gold-400 border border-gold-400/40";
+                pillMobile.innerHTML = `Key Needed`;
+            }
+        }
+
+        function openApiKeyModal() {
+            document.getElementById('apiKeyInput').value = getStoredApiKey();
+            document.getElementById('apiKeyModal').classList.remove('hidden');
+            document.getElementById('apiKeyModal').classList.add('flex');
+        }
+
+        function closeApiKeyModal() {
+            document.getElementById('apiKeyModal').classList.add('hidden');
+            document.getElementById('apiKeyModal').classList.remove('flex');
+        }
+
+        function saveApiKey() {
+            const val = document.getElementById('apiKeyInput').value.trim();
+            if (val) {
+                localStorage.setItem('sl_quiz_matrix_gemini_key', val);
+                loadApiKey();
+                closeApiKeyModal();
+            }
+        }
+
+        function clearApiKey() {
+            localStorage.removeItem('sl_quiz_matrix_gemini_key');
+            document.getElementById('apiKeyInput').value = '';
+            loadApiKey();
+            closeApiKeyModal();
+        }
+
+        // Gemini AI Past Paper Extraction
+        async function extractTopicQuestions(isNextBatch = false) {
+            const apiKey = getStoredApiKey();
+            if (!apiKey) {
+                openApiKeyModal();
+                return;
+            }
+
+            const level = document.getElementById('topicExamLevel').value;
+            const subject = document.getElementById('topicSubject').value;
+            const topic = document.getElementById('topicSelect').value;
+            const medium = document.getElementById('topicMedium').value;
+            const count = document.getElementById('batchSize').value;
+
+            const container = document.getElementById('questionsContainer');
+            
+            if (!isNextBatch) {
+                container.innerHTML = `
+                    <div class="glass-panel rounded-2xl p-8 text-center space-y-4">
+                        <i class="fa-solid fa-circle-notch fa-spin text-4xl text-gold-400"></i>
+                        <p class="text-white font-heading text-lg">Extracting ${count} Authentic SL Past Paper MCQs (2015–2025)...</p>
+                    </div>
+                `;
+            }
+
+            const prompt = `Act as a Senior Examiner for the Sri Lanka Department of Examinations (G.C.E. ${level}).
+Generate exactly ${count} authentic multiple choice questions for the subject "${subject}" under syllabus topic "${topic}".
+Medium: ${medium}.
+Ensure questions directly reflect official past paper style and marking schemes from 2015 to 2025.
+
+Provide JSON output as an array:
+[
+  {
+    "questionNumber": "Past Paper Reference (e.g., 2022 MCQ 18)",
+    "question": "Question text here",
+    "options": ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"],
+    "correctIndex": 0,
+    "explanation": "Step-by-step marking scheme explanation."
+  }
+]`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+
+                const data = await response.json();
+                const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                const questions = JSON.parse(jsonText);
+
+                if (!isNextBatch) {
+                    container.innerHTML = '';
+                    window.currentLoadedQuestions = [];
+                }
+
+                questions.forEach((q) => {
+                    const globalIdx = window.currentLoadedQuestions.length;
+                    window.currentLoadedQuestions.push(q);
+                    renderQuestionCard(q, globalIdx, container);
+                });
+
+                document.getElementById('paginationControls').classList.remove('hidden');
+
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `
+                    <div class="glass-panel-gold rounded-2xl p-6 text-center space-y-3 border-red-500/40">
+                        <i class="fa-solid fa-triangle-exclamation text-3xl text-red-400"></i>
+                        <p class="text-white font-bold">Extraction Error</p>
+                        <p class="text-xs text-gray-300">Check your API key status or select a smaller batch size.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderQuestionCard(q, index, targetContainer) {
+            const card = document.createElement('div');
+            card.className = "glass-panel rounded-2xl p-6 space-y-4 border border-white/10 hover:border-gold-400/30 transition-all";
+
+            card.innerHTML = `
+                <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                    <span class="px-3 py-1 rounded-full bg-gold-400/10 text-gold-400 font-mono text-xs border border-gold-400/30">
+                        ${q.questionNumber || `Question ${index + 1}`}
+                    </span>
+                    <button onclick="bookmarkQuestion(${index})" class="text-gray-400 hover:text-amber-300 text-sm">
+                        <i class="fa-regular fa-bookmark"></i> Save
+                    </button>
+                </div>
+
+                <p class="text-white text-base font-medium leading-relaxed">${q.question}</p>
+
+                <div class="space-y-2 pt-2">
+                    ${q.options.map((opt, oIdx) => `
+                        <button onclick="checkAnswer(${index}, ${oIdx}, ${q.correctIndex})" id="opt-${index}-${oIdx}" class="w-full text-left p-3.5 rounded-xl bg-black/40 border border-gray-800 hover:border-gold-400/40 text-sm text-gray-300 transition-all flex items-center justify-between">
+                            <span>${oIdx + 1}. ${opt}</span>
+                            <i class="fa-solid fa-circle text-xs opacity-0" id="icon-${index}-${oIdx}"></i>
+                        </button>
+                    `).join('')}
+                </div>
+
+                <div id="explanation-${index}" class="hidden p-4 rounded-xl bg-gold-400/10 border border-gold-400/30 text-xs text-gold-200 space-y-1">
+                    <div class="font-bold font-mono text-gold-400 flex items-center gap-1">
+                        <i class="fa-solid fa-lightbulb"></i> MARKING SCHEME EXPLANATION
+                    </div>
+                    <p class="leading-relaxed text-gray-200">${q.explanation}</p>
+                </div>
+            `;
+
+            targetContainer.appendChild(card);
+        }
+
+        function checkAnswer(qIdx, selectedIdx, correctIdx) {
+            const q = window.currentLoadedQuestions[qIdx];
+            if (q.answered) return;
+            q.answered = true;
+
+            window.userStats.totalAttempts++;
+
+            for (let i = 0; i < q.options.length; i++) {
+                const optBtn = document.getElementById(`opt-${qIdx}-${i}`);
+                if (i === correctIdx) {
+                    optBtn.className = "w-full text-left p-3.5 rounded-xl bg-emerald-500/20 border border-emerald-500 text-sm text-emerald-300 font-semibold flex items-center justify-between";
+                } else if (i === selectedIdx) {
+                    optBtn.className = "w-full text-left p-3.5 rounded-xl bg-red-500/20 border border-red-500 text-sm text-red-300 font-semibold flex items-center justify-between";
+                }
+            }
+
+            if (selectedIdx === correctIdx) {
+                window.userStats.correctAttempts++;
+            }
+
+            document.getElementById(`explanation-${qIdx}`).classList.remove('hidden');
+            updateDashboardUI();
+            saveLocalState();
+        }
+
+        // Exam Simulator Logic
+        async function startExamSimulation() {
+            const apiKey = getStoredApiKey();
+            if (!apiKey) {
+                openApiKeyModal();
+                return;
+            }
+
+            const level = document.getElementById('examLevel').value;
+            const subject = document.getElementById('examSubject').value;
+            const medium = document.getElementById('examMedium').value;
+            const candidateIndex = document.getElementById('candidateIndex').value.trim() || "849201";
+
+            const count = level === 'OL' ? 10 : 15;
+            const minutes = level === 'OL' ? 15 : 30;
+
+            document.getElementById('examSetupCard').classList.add('hidden');
+            document.getElementById('activeExamWrapper').classList.remove('hidden');
+            document.getElementById('examIndexBadge').textContent = `Index: ${candidateIndex}`;
+
+            const container = document.getElementById('examQuestionsContainer');
+            container.innerHTML = `
+                <div class="glass-panel rounded-2xl p-8 text-center space-y-4">
+                    <i class="fa-solid fa-circle-notch fa-spin text-4xl text-gold-400"></i>
+                    <p class="text-white font-heading text-lg">Generating Official G.C.E. ${level} Paper for ${subject}...</p>
+                </div>
+            `;
+
+            const prompt = `Act as Sri Lanka Examination Department Paper Setter.
+Generate ${count} past paper MCQs for subject "${subject}" (${level}, ${medium} Medium) from past papers 2015-2025.
+Return JSON array:
+[
+  {
+    "id": 1,
+    "question": "Question text",
+    "options": ["Opt 1", "Opt 2", "Opt 3", "Opt 4", "Opt 5"],
+    "correctIndex": 0,
+    "explanation": "Marking scheme step"
+  }
+]`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+
+                const data = await response.json();
+                const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                window.activeExamQuestions = JSON.parse(jsonText);
+                window.activeExamAnswers = {};
+
+                renderExamPaper(container);
+                startExamTimer(minutes * 60);
+
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function renderExamPaper(container) {
+            container.innerHTML = '';
+            window.activeExamQuestions.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = "glass-panel rounded-2xl p-6 space-y-4 border border-white/10";
+                card.innerHTML = `
+                    <div class="font-mono text-xs text-gold-400">QUESTION ${idx + 1}</div>
+                    <p class="text-white text-base font-medium">${q.question}</p>
+                    <div class="space-y-2 pt-2">
+                        ${q.options.map((opt, oIdx) => `
+                            <button onclick="selectExamOption(${idx}, ${oIdx})" id="eopt-${idx}-${oIdx}" class="w-full text-left p-3.5 rounded-xl bg-black/40 border border-gray-800 hover:border-gold-400/40 text-sm text-gray-300 flex items-center justify-between">
+                                <span>${oIdx + 1}. ${opt}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectExamOption(qIdx, oIdx) {
+            window.activeExamAnswers[qIdx] = oIdx;
+            const q = window.activeExamQuestions[qIdx];
+            q.options.forEach((_, i) => {
+                const btn = document.getElementById(`eopt-${qIdx}-${i}`);
+                if (i === oIdx) {
+                    btn.className = "w-full text-left p-3.5 rounded-xl bg-gold-400/20 border border-gold-400 text-sm text-gold-300 font-semibold flex items-center justify-between";
+                } else {
+                    btn.className = "w-full text-left p-3.5 rounded-xl bg-black/40 border border-gray-800 hover:border-gold-400/40 text-sm text-gray-300 flex items-center justify-between";
+                }
+            });
+        }
+
+        function startExamTimer(seconds) {
+            clearInterval(window.examTimerInterval);
+            let timeRemaining = seconds;
+
+            window.examTimerInterval = setInterval(() => {
+                const m = Math.floor(timeRemaining / 60);
+                const s = timeRemaining % 60;
+                document.getElementById('examTimer').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(window.examTimerInterval);
+                    submitExamPaper();
+                }
+                timeRemaining--;
+            }, 1000);
+        }
+
+        function submitExamPaper() {
+            clearInterval(window.examTimerInterval);
+            document.getElementById('activeExamWrapper').classList.add('hidden');
+            
+            let score = 0;
+            const total = window.activeExamQuestions.length;
+
+            window.activeExamQuestions.forEach((q, idx) => {
+                if (window.activeExamAnswers[idx] === q.correctIndex) {
+                    score++;
+                }
+            });
+
+            const pct = Math.round((score / total) * 100);
+            let grade = 'W';
+            if (pct >= 75) grade = 'A';
+            else if (pct >= 65) grade = 'B';
+            else if (pct >= 55) grade = 'C';
+            else if (pct >= 35) grade = 'S';
+
+            window.userStats.examsCompleted++;
+            window.examHistory.unshift({
+                date: new Date().toLocaleDateString(),
+                score: `${score}/${total}`,
+                pct: `${pct}%`,
+                grade: grade
+            });
+
+            document.getElementById('resultScore').textContent = `${score}/${total}`;
+            document.getElementById('resultPercentage').textContent = `${pct}%`;
+            document.getElementById('resultGrade').textContent = grade;
+            
+            document.getElementById('examResultsCard').classList.remove('hidden');
+            updateDashboardUI();
+            saveLocalState();
+        }
+
+        function resetExamSimulator() {
+            document.getElementById('examResultsCard').classList.add('hidden');
+            document.getElementById('examSetupCard').classList.remove('hidden');
+        }
+
+        function bookmarkQuestion(index) {
+            const q = window.currentLoadedQuestions[index];
+            if (q) {
+                window.userStats.bookmarkedQuestions.push(q);
+                updateDashboardUI();
+                saveLocalState();
+            }
+        }
+
+        function saveLocalState() {
+            localStorage.setItem('sl_quiz_matrix_user_data', JSON.stringify({
+                stats: window.userStats,
+                history: window.examHistory
+            }));
+        }
+
+        function loadLocalState() {
+            const raw = localStorage.getItem('sl_quiz_matrix_user_data');
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    window.userStats = parsed.stats || window.userStats;
+                    window.examHistory = parsed.history || window.examHistory;
+                } catch(e) {}
+            }
+        }
+
+        function updateDashboardUI() {
+            document.getElementById('statTotalAttempts').textContent = window.userStats.totalAttempts;
+            const accuracy = window.userStats.totalAttempts > 0 
+                ? Math.round((window.userStats.correctAttempts / window.userStats.totalAttempts) * 100) 
+                : 0;
+            document.getElementById('statAvgAccuracy').textContent = `${accuracy}%`;
+            document.getElementById('statExamsDone').textContent = window.userStats.examsCompleted;
+            document.getElementById('statBookmarks').textContent = window.userStats.bookmarkedQuestions.length;
+
+            const histContainer = document.getElementById('examHistoryContainer');
+            if (window.examHistory.length > 0) {
+                histContainer.innerHTML = window.examHistory.map(h => `
+                    <div class="flex items-center justify-between p-3.5 rounded-xl bg-black/40 border border-white/5 text-sm font-mono">
+                        <div>
+                            <span class="text-white font-bold">${h.date}</span>
+                            <span class="text-gray-400 text-xs ml-2">Score: ${h.score}</span>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-gold-400/10 text-gold-400 border border-gold-400/30">Grade: ${h.grade} (${h.pct})</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function toggleMobileDrawer() {
+            document.getElementById('mobileDrawer').classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
